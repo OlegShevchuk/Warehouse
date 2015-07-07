@@ -6,6 +6,7 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <!--mapping config-->
         <class>warehouse.model.User</class>
+        <class>warehouse.model.Warehouse</class>
 
 
         <properties>

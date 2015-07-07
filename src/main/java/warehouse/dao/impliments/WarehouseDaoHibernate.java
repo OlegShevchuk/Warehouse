@@ -1,7 +1,9 @@
 package warehouse.dao.impliments;
 
+import org.springframework.stereotype.Service;
 import warehouse.dao.interfaces.WarehouseDao;
 import warehouse.exeption.OperationNotSupported;
+import warehouse.exeption.RecordNotFound;
 import warehouse.model.Warehouse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 
 /**
  * Created by Олег on 07.07.2015.
@@ -20,6 +23,14 @@ public class WarehouseDaoHibernate implements WarehouseDao {
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
+
+    public EntityManagerFactory getEntityManagerFactory() {
+        return entityManagerFactory;
+    }
+
+    public void setEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     public WarehouseDaoHibernate() {
     }
@@ -51,10 +62,9 @@ public class WarehouseDaoHibernate implements WarehouseDao {
     }
 
     public Warehouse select(String login) {
-
         EntityManager entityManager=entityManagerFactory.createEntityManager();
-        Warehouse warehouse =(Warehouse)entityManager.createQuery("From warehouse w Where w.warehousname= :warehousname ")
-                .setParameter("warehousname", login)
+        Warehouse warehouse =entityManager.createQuery("From Warehouse w Where w.warehousName=:warehousName", Warehouse.class)
+                .setParameter("warehousName", login)
                 .getSingleResult();
         LOG.info(warehouse);
         return warehouse;
@@ -62,10 +72,32 @@ public class WarehouseDaoHibernate implements WarehouseDao {
     }
 
     public Warehouse update(Warehouse model) throws Exception {
-        return null;
+
+        EntityManager entityManager=entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction=entityManager.getTransaction();
+        LOG.info("Начало транзакции");
+        try{
+            entityTransaction.begin();
+            Warehouse warehouse=select(model.getWarehousName());
+            if (warehouse!=null) {
+                entityManager.merge(model);
+            } else {
+                LOG.info("Такого склада не существует");
+                throw new RecordNotFound("Запись не найдена");
+            }
+
+        }catch (Exception e){
+            LOG.info("Транзакция прервана");
+            entityTransaction.rollback();
+            LOG.error(e);
+        }
+
+        return select(model.getWarehousName());
     }
 
     public Warehouse del(Warehouse model) throws OperationNotSupported {
-        return null;
+
+        throw new OperationNotSupported();
+
     }
 }

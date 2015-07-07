@@ -1,21 +1,20 @@
 package warehouse.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by Олег on 02.06.2015.
  */
 @Entity
-@Table(name="warehouse")
+@Table(name="Warehouses")
 public class Warehouse {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id",unique = true)
     private int id;
 
-    @Column(name="warehousname", length = 30, unique = true, nullable = false)
+    @Column(name="name", length = 30, unique = true, nullable = false)
     private String warehousName;
 
     @Column(name="size", length = 10, nullable = false)
@@ -24,12 +23,11 @@ public class Warehouse {
     public Warehouse() {
     }
 
-    public int getId() {
-        return id;
-    }
 
-    public void setId(int id) {
-        this.id = id;
+
+    public Warehouse(String warehousName, int sizeWarehouse) {
+        this.warehousName = warehousName;
+        this.sizeWarehouse = sizeWarehouse;
     }
 
     public String getWarehousName() {
@@ -51,7 +49,6 @@ public class Warehouse {
     @Override
     public String toString() {
         return "warehouse{" +
-                "id=" + id +
                 ", warehousName='" + warehousName + '\'' +
                 ", sizeWarehouse=" + sizeWarehouse +
                 '}';

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 
 /**
  * Created by Олег on 30.06.2015.
@@ -25,9 +26,7 @@ public class UsersDaoHibernate implements UserDao {
     public UsersDaoHibernate() {
     }
 
-    public UsersDaoHibernate(EntityManagerFactory entityManagerFactory) {
-        this.entityManagerFactory = entityManagerFactory;
-    }
+
 
     public User creat(User model) {
 
@@ -55,7 +54,7 @@ public class UsersDaoHibernate implements UserDao {
 
     public User select(String login) {
         EntityManager entityManager=entityManagerFactory.createEntityManager();
-        User user =(User)entityManager.createQuery("From User u Where u.login= :login ")
+        User user =entityManager.createQuery("From User u Where u.login= :login",User.class)
                 .setParameter("login", login)
                 .getSingleResult();
         LOG.info(user);
@@ -81,6 +80,9 @@ public class UsersDaoHibernate implements UserDao {
             transaction.rollback();
             LOG.info("Транзакция прервана!");
             throw e;
+        }
+        finally {
+            entityManager.close();
         }
         return select(model.getLogin());
     }

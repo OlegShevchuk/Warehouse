@@ -7,9 +7,10 @@ import javax.persistence.*;
  */
 
 @Entity
-@Table(name="WarehouseSpace")
+@Table(name="WarehouseSpaces")
 public class WarehouseSpace {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(name="article", length = 20, unique = true, nullable = false)
