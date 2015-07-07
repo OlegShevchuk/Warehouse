@@ -1,0 +1,15 @@
+#IDEA files
+*.iml
+.idea/
+temp/
+
+#maven
+target/
+
+#Java bin
+*.class
+*.project
+*.classpath
+
+#files
+
