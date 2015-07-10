@@ -1,6 +1,8 @@
 package warehouse.model;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Олег on 01.06.2015.
@@ -13,17 +15,35 @@ public class WarehouseSpace {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column(name="article", length = 20, unique = true, nullable = false)
-    private String article;
 
-//    @Column(name="batch", length = 35, unique = true)
-//    private Batch batch;
+    @Column(name="articleSpace", length = 20, unique = true, nullable = false)
+    private String articleSpace;
+
+    @ManyToMany
+    @JoinTable(name = "product_space",
+        joinColumns = @JoinColumn(name = "space"),
+        inverseJoinColumns = @JoinColumn(name = "product"))
+    private Set<Product> products;
+
 
     @ManyToOne
-    @JoinColumn(name = "warehouse_id", referencedColumnName = "id")
+    @JoinColumn(name = "warehouse_id", referencedColumnName = "Id", nullable = false)
     private Warehouse warehouse;
 
     public WarehouseSpace() {
+    }
+
+    public Set<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
+    }
+
+    public WarehouseSpace(String article, Warehouse warehouse) {
+        this.articleSpace = article;
+        this.warehouse = warehouse;
     }
 
     public int getId() {
@@ -34,12 +54,12 @@ public class WarehouseSpace {
         this.id = id;
     }
 
-    public String getArticle() {
-        return article;
+    public String getArticleSpace() {
+        return articleSpace;
     }
 
-    public void setArticle(String article) {
-        this.article = article;
+    public void setArticleSpace(String article) {
+        this.articleSpace = article;
     }
 
     public Warehouse getWarehouse() {
@@ -53,8 +73,25 @@ public class WarehouseSpace {
     @Override
     public String toString() {
         return "WarehouseSpace{" +
-                "article='" + article + '\'' +
-                ", warehouse=" + warehouse +
+                "articleSpace='" + articleSpace + '\'' +
+                ", products=" + products.size() +
+                ", warehouse=" + warehouse.getWarehousName() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WarehouseSpace)) return false;
+
+        WarehouseSpace that = (WarehouseSpace) o;
+
+        return articleSpace.equals(that.articleSpace);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return articleSpace.hashCode();
     }
 }

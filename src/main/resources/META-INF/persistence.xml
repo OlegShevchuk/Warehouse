@@ -7,6 +7,7 @@
         <!--mapping config-->
         <class>warehouse.model.User</class>
         <class>warehouse.model.Warehouse</class>
+        <class>warehouse.model.WarehouseSpace</class>
 
 
         <properties>

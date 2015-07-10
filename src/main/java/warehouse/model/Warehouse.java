@@ -1,6 +1,8 @@
 package warehouse.model;
 
 import javax.persistence.*;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by Олег on 02.06.2015.
@@ -17,17 +19,21 @@ public class Warehouse {
     @Column(name="name", length = 30, unique = true, nullable = false)
     private String warehousName;
 
-    @Column(name="size", length = 10, nullable = false)
-    private int sizeWarehouse;
+    @OneToMany(mappedBy = "warehouse",
+            cascade = {CascadeType.ALL},
+            fetch = FetchType.LAZY)
+    private Set<WarehouseSpace> wSpases;
 
     public Warehouse() {
     }
 
-
-
-    public Warehouse(String warehousName, int sizeWarehouse) {
+    public Warehouse(String warehousName, Set<WarehouseSpace> wSpases) {
         this.warehousName = warehousName;
-        this.sizeWarehouse = sizeWarehouse;
+        this.wSpases = wSpases;
+    }
+
+    public Warehouse(String warehousName) {
+        this.warehousName = warehousName;
     }
 
     public String getWarehousName() {
@@ -38,19 +44,20 @@ public class Warehouse {
         this.warehousName = warehousName;
     }
 
-    public int getSizeWarehouse() {
-        return sizeWarehouse;
+    public Set<WarehouseSpace> getwSpases() {
+        return wSpases;
     }
 
-    public void setSizeWarehouse(int sizeWarehouse) {
-        this.sizeWarehouse = sizeWarehouse;
+    public void setwSpases(TreeSet<WarehouseSpace> wSpases) {
+        this.wSpases = wSpases;
     }
 
     @Override
     public String toString() {
-        return "warehouse{" +
+        return "Warehouse{" +
+                "id=" + id +
                 ", warehousName='" + warehousName + '\'' +
-                ", sizeWarehouse=" + sizeWarehouse +
+                ", wSpases=" + wSpases +
                 '}';
     }
 }

@@ -16,6 +16,9 @@
     <log4j.version>1.2.17</log4j.version>
     <mysql-connector-java.version>5.1.35</mysql-connector-java.version>
     <spring.version>4.1.4.RELEASE</spring.version>
+    <cglib.version>2.2.2</cglib.version>
+    <jdk.version>1.7.0_75</jdk.version>
+
 
   </properties>
 
@@ -72,6 +75,37 @@
       <version>${spring.version}</version>
     </dependency>
 
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib</artifactId>
+      <version>${cglib.version}</version>
+    </dependency>
+
 
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>warehouse.AppRun</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
