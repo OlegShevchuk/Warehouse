@@ -1,7 +1,9 @@
 package warehouse.model;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -15,35 +17,64 @@ public class WarehouseSpace {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-
     @Column(name="articleSpace", length = 20, unique = true, nullable = false)
     private String articleSpace;
 
-    @ManyToMany
-    @JoinTable(name = "product_space",
-        joinColumns = @JoinColumn(name = "space"),
-        inverseJoinColumns = @JoinColumn(name = "product"))
-    private Set<Product> products;
+    @OneToMany(mappedBy = "space",
+                cascade = {CascadeType.ALL},
+                fetch = FetchType.LAZY)
+    private Set<Batch> products;
+
+    @Temporal(TemporalType.DATE)
+    private Date creationDate;
 
 
     @ManyToOne
     @JoinColumn(name = "warehouse_id", referencedColumnName = "Id", nullable = false)
     private Warehouse warehouse;
 
+
+    /*
+     * Методы
+     */
+
+    public void addBatch(Batch batch){
+
+        if (products==null) products=new H
+        products.add(batch);
+    }
+
+    /*
+     *Конструкторы
+     */
+
     public WarehouseSpace() {
-    }
 
-    public Set<Product> getProducts() {
-        return products;
-    }
-
-    public void setProducts(Set<Product> products) {
-        this.products = products;
     }
 
     public WarehouseSpace(String article, Warehouse warehouse) {
         this.articleSpace = article;
         this.warehouse = warehouse;
+    }
+
+    /*
+     * Геттеры и сеттеры
+     */
+
+    public Set<Batch> getProducts() {
+        return products;
+    }
+
+    public void setProducts(Set<Batch> products) {
+        this.products = products;
+    }
+
+    public String getArticleSpace() {
+        return articleSpace;
+    }
+
+    public void setArticleSpace(String articleSpace) {
+        this.articleSpace = articleSpace;
     }
 
     public int getId() {
@@ -54,12 +85,14 @@ public class WarehouseSpace {
         this.id = id;
     }
 
-    public String getArticleSpace() {
-        return articleSpace;
+
+
+    public Date getCreationDate() {
+        return creationDate;
     }
 
-    public void setArticleSpace(String article) {
-        this.articleSpace = article;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     public Warehouse getWarehouse() {
@@ -70,28 +103,5 @@ public class WarehouseSpace {
         this.warehouse = warehouse;
     }
 
-    @Override
-    public String toString() {
-        return "WarehouseSpace{" +
-                "articleSpace='" + articleSpace + '\'' +
-                ", products=" + products.size() +
-                ", warehouse=" + warehouse.getWarehousName() +
-                '}';
-    }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof WarehouseSpace)) return false;
-
-        WarehouseSpace that = (WarehouseSpace) o;
-
-        return articleSpace.equals(that.articleSpace);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return articleSpace.hashCode();
-    }
 }

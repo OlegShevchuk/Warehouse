@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import warehouse.dao.interfaces.WarehouseSpaceDao;
 import warehouse.exeption.OperationNotSupported;
+import warehouse.exeption.RecordNotFound;
 import warehouse.model.WarehouseSpace;
 
 import javax.persistence.Entity;
@@ -26,8 +27,7 @@ public class WarehouseSpaceDaoHibernate implements WarehouseSpaceDao {
     private EntityManagerFactory entityManagerFactory;
 
 
-    //@Transactional(propagation= Propagation.REQUIRED, rollbackFor=Exception.class)
-    public WarehouseSpace creat(WarehouseSpace model) {
+   public WarehouseSpace creat(WarehouseSpace model) {
         EntityManager entityManager=entityManagerFactory.createEntityManager();
         EntityTransaction entityTransaction=entityManager.getTransaction();
         try {
@@ -45,16 +45,42 @@ public class WarehouseSpaceDaoHibernate implements WarehouseSpaceDao {
         return model;
     }
 
-    public WarehouseSpace select(String login) {
+    public WarehouseSpace select(String login) throws RecordNotFound {
         EntityManager entityManager=entityManagerFactory.createEntityManager();
+        try{
         WarehouseSpace warehouseSpace=entityManager.createQuery("from WarehouseSpace w Where w.articleSpace=:articleSpace", WarehouseSpace.class).
                 setParameter("articleSpace", login).
                 getSingleResult();
-        return warehouseSpace;
+        return warehouseSpace;}
+        catch (Exception e){
+            LOG.error(e);
+            LOG.info("Запись не найдена");
+            throw new RecordNotFound("Места с таким артикулем не существует");
+        }finally {
+            entityManager.close();
+        }
     }
 
     public WarehouseSpace update(WarehouseSpace model) throws Exception {
-        return null;
+        EntityManager entityManager=entityManagerFactory.createEntityManager();
+        EntityTransaction entityTransaction=entityManager.getTransaction();
+        LOG.info("Начало транзакции");
+        try{
+            WarehouseSpace warehouseSpace=select(model.getArticleSpace());
+            entityTransaction.begin();
+            entityManager.merge(model);
+            entityTransaction.commit();
+            return warehouseSpace;
+
+        }catch (Exception e){
+            LOG.info("Транзакция прервана");
+            entityTransaction.rollback();
+            LOG.error(e);
+            throw e;
+        }finally {
+            entityManager.close();
+        }
+
     }
 
     public WarehouseSpace del(WarehouseSpace model) throws OperationNotSupported {

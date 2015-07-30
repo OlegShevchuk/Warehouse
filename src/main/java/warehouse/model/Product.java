@@ -16,31 +16,42 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+
     @Column(name = "articleSpace", nullable = false, unique = true)
     private String articleProduct;
 
     @Column(name = "name", nullable = false)
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "product_space",
-            joinColumns=@JoinColumn(name="product"),
-            inverseJoinColumns = @JoinColumn(name = "space"))
-    private Set<WarehouseSpace> warehouseSpaces;
+    @OneToMany(mappedBy = "product",
+            cascade = {CascadeType.ALL},
+            fetch = FetchType.LAZY)
+    private Set<Batch> batches;
 
+    @ManyToOne
+    @JoinColumn(name = "tenants_id", referencedColumnName = "Id")
+    private Tenant tenant;
+
+    /*
+     *Конструкторы
+     */
     public Product() {
     }
 
-    public Product(String articleProduct, String name, Set<WarehouseSpace> warehouseSpaces) {
+    public Product(String articleProduct, String name) {
         this.articleProduct = articleProduct;
         this.name = name;
-        this.warehouseSpaces = warehouseSpaces;
+
     }
 
-    public Product(String articleProduct, Set<WarehouseSpace> warehouseSpaces) {
+    public Product(String articleProduct) {
         this.articleProduct = articleProduct;
-        this.warehouseSpaces = warehouseSpaces;
+
     }
+
+    /*
+     *Геттеры и Сеттеры
+     */
 
     public String getArticleProduct() {
         return articleProduct;
@@ -50,36 +61,27 @@ public class Product {
         this.articleProduct = articleProduct;
     }
 
-    public Set<WarehouseSpace> getWarehouseSpaces() {
-        return warehouseSpaces;
+    public String getName() {
+        return name;
     }
 
-    public void setWarehouseSpaces(Set<WarehouseSpace> warehouseSpaces) {
-        this.warehouseSpaces = warehouseSpaces;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Product)) return false;
-
-        Product product = (Product) o;
-
-        return articleProduct.equals(product.articleProduct);
-
+    public Set<Batch> getBatches() {
+        return batches;
     }
 
-    @Override
-    public int hashCode() {
-        return articleProduct.hashCode();
+    public void setBatches(Set<Batch> batches) {
+        this.batches = batches;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "articleProduct='" + articleProduct + '\'' +
-                ", name='" + name + '\'' +
-                ", warehouseSpaces=" + warehouseSpaces.size() +
-                '}';
+    public Tenant getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(Tenant tenant) {
+        this.tenant = tenant;
     }
 }

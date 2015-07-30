@@ -8,6 +8,9 @@
         <class>warehouse.model.User</class>
         <class>warehouse.model.Warehouse</class>
         <class>warehouse.model.WarehouseSpace</class>
+        <class>warehouse.model.Product</class>
+        <class>warehouse.model.Tenant</class>
+        <class>warehouse.model.Batch</class>
 
 
         <properties>

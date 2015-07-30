@@ -52,13 +52,19 @@ public class UsersDaoHibernate implements UserDao {
         return null;
     }
 
-    public User select(String login) {
+    public User select(String login) throws RecordNotFound {
+        try{
         EntityManager entityManager=entityManagerFactory.createEntityManager();
         User user =entityManager.createQuery("From User u Where u.login= :login",User.class)
                 .setParameter("login", login)
                 .getSingleResult();
         LOG.info(user);
-        return user;
+        return user;}
+        catch (Exception e){
+            LOG.info("Запись не найдена");
+            LOG.error(e);
+            throw new RecordNotFound("Пользователь с таким именем не существует");
+        }
     }
 
     public User update(User model) throws Exception {
@@ -68,13 +74,10 @@ public class UsersDaoHibernate implements UserDao {
         try {
             transaction.begin();
             User oldUser = select(model.getLogin());
-            if (oldUser != null) {
-                entityManager.merge(model);
-            } else {
-                throw new RecordNotFound();
-            }
+            entityManager.merge(model);
             transaction.commit();
             LOG.info("транзакция завершилась успешно");
+            return oldUser;
         } catch (Exception e){
             LOG.error(e);
             transaction.rollback();
@@ -84,7 +87,6 @@ public class UsersDaoHibernate implements UserDao {
         finally {
             entityManager.close();
         }
-        return select(model.getLogin());
     }
 
     public User del(User model) throws OperationNotSupported {

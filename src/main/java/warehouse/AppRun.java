@@ -11,10 +11,7 @@ import warehouse.dao.interfaces.UserDao;
 import warehouse.dao.interfaces.WarehouseDao;
 import warehouse.dao.interfaces.WarehouseSpaceDao;
 import warehouse.exeption.RecordNotFound;
-import warehouse.model.Product;
-import warehouse.model.User;
-import warehouse.model.Warehouse;
-import warehouse.model.WarehouseSpace;
+import warehouse.model.*;
 import warehouse.servise.impliments.UserServiceImpl;
 import warehouse.servise.interfaces.UserServise;
 
@@ -25,41 +22,42 @@ import java.util.Set;
  * Created by Олег on 07.07.2015.
  */
 public class AppRun {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RecordNotFound {
 
 
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("\\context.xml");
-//
-//        Set<WarehouseSpace> warehouseSpaceSet=new HashSet<WarehouseSpace>();
-//        Warehouse warehouse=new Warehouse("street", warehouseSpaceSet);
-//        for (int i=0;i<10;i++){
-//            warehouseSpaceSet.add(new WarehouseSpace(warehouse.getWarehousName()+"."+i,warehouse));
-//        }
-//
-//        WarehouseDaoHibernate warehouseDaoHibernate=applicationContext.getBean(WarehouseDaoHibernate.class);
-//        warehouseDaoHibernate.creat(warehouse);
+
+        WarehouseDao warehouseDao=applicationContext.getBean(WarehouseDaoHibernate.class);
+
+
+        WarehouseSpace warehouseSpace;
         WarehouseSpaceDao warehouseSpaceDao=applicationContext.getBean(WarehouseSpaceDaoHibernate.class);
-        WarehouseSpace warehouseSpace=warehouseSpaceDao.select("street.8");
-       // Product product=new Product("aaacb","Панталоны", new HashSet<WarehouseSpace>());
+        warehouseSpace=warehouseSpaceDao.select("2abc");
+
+        Tenant tenant=new Tenant("Причал торпедных катеров");
+
+        Product product=new Product("123","Буйки");
+        product.setTenant(tenant);
+        Batch batch=new Batch(product, 10);
+
+        Set<Batch> set=new HashSet<>();
+        set.add(batch);
+        warehouseSpace.setProducts(set);
+
+        try {
+            warehouseSpaceDao.update(warehouseSpace);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         System.out.println();
-        System.out.println(warehouseSpace);
-
-        for(Product product:warehouseSpace.getProducts())
-        System.out.println(product);
+        System.out.println();
 
 
-       // ProductDao productDao=applicationContext.getBean(ProductDaoHibernate.class);
-       // product.getWarehouseSpaces().add(warehouseSpace);
-        //warehouseSpace.getProducts().add(product);
-       // productDao.creat(product);
-        //System.out.println(warehouseDaoHibernate+"Бин получен");
-       //Warehouse warehouse=warehouseDaoHibernate.select("street");
-       // System.out.println("Типа работает!!!");
-        //WarehouseSpace warehouseSpace=new WarehouseSpace("2", warehouse);
-      // WarehouseSpaceDao warehouseSpaceDao=applicationContext.getBean(WarehouseSpaceDaoHibernate.class);
-       // warehouseSpaceDao.creat(warehouseSpace);
-       // System.out.println(warehouseSpaceDao.select("street3.1"));
+
+
+
 
 
 

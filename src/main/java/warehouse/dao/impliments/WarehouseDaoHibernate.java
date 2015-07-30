@@ -61,13 +61,21 @@ public class WarehouseDaoHibernate implements WarehouseDao {
         return null;
     }
 
-    public Warehouse select(String login) {
+    public Warehouse select(String login) throws RecordNotFound {
         EntityManager entityManager=entityManagerFactory.createEntityManager();
+        try{
         Warehouse warehouse =entityManager.createQuery("From Warehouse w Where w.warehousName=:warehousName", Warehouse.class)
                 .setParameter("warehousName", login)
                 .getSingleResult();
         LOG.info(warehouse);
-        return warehouse;
+        return warehouse;}
+        catch (Exception e){
+            LOG.info("Запись не найдена");
+            LOG.error(e);
+            throw new RecordNotFound("Склад с таким названием не существует");
+        }finally {
+            entityManager.close();
+        }
 
     }
 
@@ -79,20 +87,17 @@ public class WarehouseDaoHibernate implements WarehouseDao {
         try{
             entityTransaction.begin();
             Warehouse warehouse=select(model.getWarehousName());
-            if (warehouse!=null) {
-                entityManager.merge(model);
-            } else {
-                LOG.info("Такого склада не существует");
-                throw new RecordNotFound("Запись не найдена");
-            }
+            entityManager.merge(model);
+            entityTransaction.commit();
+            return warehouse;
 
         }catch (Exception e){
             LOG.info("Транзакция прервана");
             entityTransaction.rollback();
             LOG.error(e);
+            throw e;
         }
 
-        return select(model.getWarehousName());
     }
 
     public Warehouse del(Warehouse model) throws OperationNotSupported {

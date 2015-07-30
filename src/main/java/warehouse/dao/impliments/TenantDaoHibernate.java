@@ -3,58 +3,32 @@ package warehouse.dao.impliments;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import warehouse.dao.interfaces.ProductDao;
 import warehouse.dao.interfaces.TenantDao;
 import warehouse.exeption.OperationNotSupported;
 import warehouse.exeption.RecordNotFound;
-import warehouse.model.Product;
 import warehouse.model.Tenant;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
-import java.util.List;
 
 /**
- * Created by Олег on 10.07.2015.
+ * Created by Олег on 30.07.2015.
  */
 @Repository
-public class ProductDaoHibernate implements ProductDao {
+public class TenantDaoHibernate implements TenantDao {
     private final Logger LOG=Logger.getLogger("ProductDaoHibernate");
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
 
-    @Autowired
-    private TenantDao tenantDao;
 
     @Override
-    public List<Product> findForTenant(Tenant tenant) {
-
-        EntityManager entityManager=entityManagerFactory.createEntityManager();
-
-        Tenant tenantBase= null;
-        try {
-            tenantBase = tenantDao.select(tenant.getCompanyName());
-        } catch (RecordNotFound recordNotFound) {
-            return null;
-        }
-
-        List <Product> products=entityManager.createQuery("From Product p Where p.tenant", Product.class).
-                setParameter("tenant", tenantBase).getResultList();
-        return products;
-    }
-
-    public Product creat(Product model) {
+    public Tenant creat(Tenant model) {
         EntityManager entityManager=entityManagerFactory.createEntityManager();
         EntityTransaction entityTransaction=entityManager.getTransaction();
         try{
             LOG.info("Начало транзакции");
-            Tenant tenant=tenantDao.select(model.getTenant().getCompanyName());
-            if (tenant==null) {
-                tenant = tenantDao.creat(model.getTenant());
-            }
-            model.setTenant(tenant);
             entityTransaction.begin();
             entityManager.persist(model);
             entityTransaction.commit();
@@ -68,30 +42,34 @@ public class ProductDaoHibernate implements ProductDao {
         finally {
             entityManager.close();
         }
+
         return null;
     }
 
-    public Product select(String articleProduct) {
+    @Override
+    public Tenant select(String login) throws RecordNotFound {
+
         EntityManager entityManager=entityManagerFactory.createEntityManager();
-        Product product =entityManager.createQuery("From Product p Where p.articleProduct= :articleProduct",Product.class)
-                .setParameter("articleProduct", articleProduct)
+        Tenant tenant =entityManager.createQuery("From Tenant t Where t.companyName= :companyName",Tenant.class)
+                .setParameter("companyName", login)
                 .getSingleResult();
-        LOG.info(product);
-        return product;
+        LOG.info(tenant);
+        return tenant;
     }
 
-    public Product update(Product model) throws Exception {
+    @Override
+    public Tenant update(Tenant model) throws Exception {
 
         EntityManager entityManager=entityManagerFactory.createEntityManager();
         EntityTransaction transaction= entityManager.getTransaction();
         LOG.info("начало транзакции");
         try {
             transaction.begin();
-            Product oldProduct = select(model.getName());
+            Tenant oldUser = select(model.getCompanyName());
             entityManager.merge(model);
             transaction.commit();
             LOG.info("транзакция завершилась успешно");
-            return oldProduct;
+            return oldUser;
         } catch (Exception e){
             LOG.error(e);
             transaction.rollback();
@@ -101,10 +79,10 @@ public class ProductDaoHibernate implements ProductDao {
         finally {
             entityManager.close();
         }
-
     }
 
-    public Product del(Product model) throws OperationNotSupported {
+    @Override
+    public Tenant del(Tenant model) throws OperationNotSupported {
         return null;
     }
 }
