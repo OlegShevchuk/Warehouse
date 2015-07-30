@@ -16,7 +16,7 @@ public class Batch {
     @Column(name="id",unique = true)
     private int id;
 
-    @OneToOne@ManyToOne
+    @ManyToOne
     @JoinColumn(name = "product_id", referencedColumnName = "Id", nullable = false)
     private Product product;
 
@@ -24,7 +24,7 @@ public class Batch {
     private int count;
 
     @ManyToOne
-    @JoinColumn(name = "warehousespace_id", referencedColumnName = "Id")
+    @JoinColumn(name = "warehousespace_id", referencedColumnName = "Id", nullable = false)
     private WarehouseSpace space;
 
     /*

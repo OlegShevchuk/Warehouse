@@ -50,12 +50,12 @@ public class ProductDaoHibernate implements ProductDao {
         EntityTransaction entityTransaction=entityManager.getTransaction();
         try{
             LOG.info("Начало транзакции");
-            Tenant tenant=tenantDao.select(model.getTenant().getCompanyName());
-            if (tenant==null) {
-                tenant = tenantDao.creat(model.getTenant());
-            }
-            model.setTenant(tenant);
             entityTransaction.begin();
+//            Tenant tenant=tenantDao.select(model.getTenant().getCompanyName());
+//            if (tenant==null) {
+//                tenant = tenantDao.creat(model.getTenant());
+//            }
+//            model.setTenant(tenant);
             entityManager.persist(model);
             entityTransaction.commit();
             LOG.info("Транзакция успешно завершилась");

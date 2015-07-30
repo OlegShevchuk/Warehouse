@@ -17,7 +17,7 @@ public class Tenant {
     @GeneratedValue
     private int id;
 
-    @Column(name = "CompanyName")
+    @Column(name = "CompanyName", unique = true)
     private String companyName;
 
     @OneToMany(mappedBy = "tenant",

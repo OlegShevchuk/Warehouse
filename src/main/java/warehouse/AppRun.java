@@ -2,14 +2,8 @@ package warehouse;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import warehouse.dao.impliments.ProductDaoHibernate;
-import warehouse.dao.impliments.UsersDaoHibernate;
-import warehouse.dao.impliments.WarehouseDaoHibernate;
-import warehouse.dao.impliments.WarehouseSpaceDaoHibernate;
-import warehouse.dao.interfaces.ProductDao;
-import warehouse.dao.interfaces.UserDao;
-import warehouse.dao.interfaces.WarehouseDao;
-import warehouse.dao.interfaces.WarehouseSpaceDao;
+import warehouse.dao.impliments.*;
+import warehouse.dao.interfaces.*;
 import warehouse.exeption.RecordNotFound;
 import warehouse.model.*;
 import warehouse.servise.impliments.UserServiceImpl;
@@ -30,15 +24,28 @@ public class AppRun {
         WarehouseDao warehouseDao=applicationContext.getBean(WarehouseDaoHibernate.class);
 
 
-        WarehouseSpace warehouseSpace;
+        //WarehouseSpace warehouseSpace =new WarehouseSpace("abc",warehouseDao.select("street"));
         WarehouseSpaceDao warehouseSpaceDao=applicationContext.getBean(WarehouseSpaceDaoHibernate.class);
-        warehouseSpace=warehouseSpaceDao.select("2abc");
+        WarehouseSpace warehouseSpace=warehouseSpaceDao.select("abc");
 
+        BatchDao batchDao=applicationContext.getBean(BatchDaoHibernate.class);
         Tenant tenant=new Tenant("Причал торпедных катеров");
+        TenantDao tenantDao=applicationContext.getBean(TenantDaoHibernate.class);
+        tenantDao.creat(tenant);
+        tenant=tenantDao.select(tenant.getCompanyName());
 
+
+        ProductDao productDao=applicationContext.getBean(ProductDaoHibernate.class);
         Product product=new Product("123","Буйки");
         product.setTenant(tenant);
+        productDao.creat(product);
+        product=productDao.select(product.getArticleProduct());
+
         Batch batch=new Batch(product, 10);
+       // batch.setSpace(warehouseSpace);
+        batch.setSpace(warehouseSpace);
+        batch=batchDao.creat(batch);
+
 
         Set<Batch> set=new HashSet<>();
         set.add(batch);

@@ -34,6 +34,7 @@ public class WarehouseSpaceDaoHibernate implements WarehouseSpaceDao {
             entityTransaction.begin();
             entityManager.persist(model);
             entityTransaction.commit();
+            return select(model.getArticleSpace());
         }
         catch (Exception e){
             entityTransaction.rollback();
@@ -42,7 +43,7 @@ public class WarehouseSpaceDaoHibernate implements WarehouseSpaceDao {
         finally {
             entityManager.close();
         }
-        return model;
+        return null;
     }
 
     public WarehouseSpace select(String login) throws RecordNotFound {
@@ -66,8 +67,8 @@ public class WarehouseSpaceDaoHibernate implements WarehouseSpaceDao {
         EntityTransaction entityTransaction=entityManager.getTransaction();
         LOG.info("Начало транзакции");
         try{
-            WarehouseSpace warehouseSpace=select(model.getArticleSpace());
             entityTransaction.begin();
+            WarehouseSpace warehouseSpace=select(model.getArticleSpace());
             entityManager.merge(model);
             entityTransaction.commit();
             return warehouseSpace;

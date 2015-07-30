@@ -34,12 +34,12 @@ public class BatchDaoHibernate implements BatchDao {
         EntityTransaction entityTransaction=entityManager.getTransaction();
         try{
             LOG.info("Начало транзакции");
-            Product product=productDao.select(model.getProduct().getArticleProduct());
-            if (product==null) {
-                product = productDao.creat(model.getProduct());
-            }
-            model.setProduct(product);
             entityTransaction.begin();
+//            Product product=productDao.select(model.getProduct().getArticleProduct());
+//            if (product==null) {
+//                product = productDao.creat(model.getProduct());
+//            }
+//            model.setProduct(product);
             entityManager.persist(model);
             entityTransaction.commit();
             LOG.info("Транзакция успешно завершилась");
@@ -57,6 +57,8 @@ public class BatchDaoHibernate implements BatchDao {
 
     @Override
     public Batch select(String login) throws RecordNotFound {
+
+
         return null;
     }
 

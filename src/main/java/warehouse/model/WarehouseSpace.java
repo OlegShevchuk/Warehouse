@@ -3,7 +3,6 @@ package warehouse.model;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -23,7 +22,7 @@ public class WarehouseSpace {
     @OneToMany(mappedBy = "space",
                 cascade = {CascadeType.ALL},
                 fetch = FetchType.LAZY)
-    private Set<Batch> products;
+    private Set<Batch> products=new HashSet<>();
 
     @Temporal(TemporalType.DATE)
     private Date creationDate;
@@ -40,7 +39,7 @@ public class WarehouseSpace {
 
     public void addBatch(Batch batch){
 
-        if (products==null) products=new H
+        if (products==null) products=new HashSet<>();
         products.add(batch);
     }
 
